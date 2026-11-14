@@ -4,18 +4,22 @@
 
 ## 무엇이 언제 도나
 
+> **2026-11-14 현재 상태**: GitHub 계정 결제 잠금("The job was not started because your account is locked due to a billing issue.")으로 Actions가 시작되지 않는다. 워크플로 `update`는 꺼 두었고, 맥미니 Hermes 예약 작업 `kspo-forecast`(매시 7분·37분, `~/.hermes/scripts/launchd/kspo-forecast.sh`)가 같은 `scripts/update.sh`를 돌린다. 잠금이 풀리면 `gh workflow enable update`로 켜고 수동 실행이 초록색인지 본 뒤 맥미니 작업을 지운다(둘이 함께 돌면 기록이 두 번 쌓인다).
+
+모든 갱신은 `scripts/update.sh` 하나가 한다: 수집 → 예보·성적표 → 22~24시면 내일 예보 고정 → main 커밋 → `site/`를 gh-pages 브랜치에 올림(GitHub Pages가 그 브랜치를 배포).
+
 | 일 | 주기 | 어디서 |
 |---|---|---|
 | 실시간 주차대수 기록(`run.py collect`) | 30분마다(매시 7분, 37분) | GitHub Actions |
 | 일정 읽기, 단기예보, 예보·성적표 JSON 만들기(`run.py build`) | 같은 실행에서 | GitHub Actions |
 | 내일 예보 고정(`run.py freeze`) | 22~24시(한국) 첫 실행 한 번 | GitHub Actions. 결과 `data/frozen/<날짜>.json`, 커밋 시각이 저장 시각 증거 |
-| 화면 배포 | 같은 실행 끝 | GitHub Pages(Actions에서 `site/`를 올린다) |
+| 화면 배포 | 같은 실행 끝 | `site/`를 gh-pages 브랜치로 푸시 → GitHub Pages 기본 빌드 |
 
 ## 비용: 무료 조건 (2026-11-14 GitHub 공식 문서로 확인)
 
 - 공개 저장소에서 표준 GitHub 호스트 실행기는 무료다. "The use of standard GitHub-hosted runners is free: In public repositories". https://docs.github.com/en/billing/concepts/product-billing/github-actions
 - 예약 실행은 5분 간격이 가장 짧고, 부하가 많으면 늦어질 수 있다(정각이 특히). **공개 저장소에서 60일 동안 저장소 활동이 없으면 예약 실행이 자동으로 꺼진다.** https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows
-- GitHub Pages 한도: 사이트 1GB 이하, 대역폭 월 100GB(느슨한 한도). Actions로 직접 배포하면 시간당 10회 빌드 한도는 적용되지 않는다. https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
+- GitHub Pages 한도: 사이트 1GB 이하, 대역폭 월 100GB(느슨한 한도), 브랜치 배포는 시간당 10회 빌드(느슨한 한도). 이 서비스는 시간당 최대 2회다. https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
 - 이 서비스의 사용량: 실행 한 번 약 1분, 하루 48번. 사이트 크기 약 0.1MB. 위 한도 안이다.
 - 60일 규칙: 30분마다 데이터 커밋을 하므로 활동이 계속 생긴다. 그래도 꺼지면(수집이 실패해 커밋이 멈춘 경우 등) Actions 화면의 `update` 워크플로에서 "Enable workflow"를 누른다.
 
@@ -54,7 +58,7 @@
 
 ## 무료 조건이 바뀌거나 GitHub를 못 쓰게 될 때
 
-옮길 것이 적다. 어느 리눅스나 맥에서든 `cron`으로 30분마다 `python3 pipeline/run.py collect && python3 pipeline/run.py build && python3 pipeline/run.py freeze`를 돌리고, `site/` 폴더를 아무 정적 웹 서버(주최 누리집 서버 포함)에 올리면 된다. 파이썬 3.10 이상, 외부 패키지 없음.
+옮길 것이 적다(지금 맥미니가 하는 방식이 그 예다). 어느 리눅스나 맥에서든 `cron`으로 30분마다 키를 환경변수로 넣고 `scripts/update.sh`를 돌리거나, `pipeline/run.py`의 collect, build, freeze를 차례로 돌린 뒤 `site/` 폴더를 아무 정적 웹 서버(주최 누리집 서버 포함)에 올리면 된다. 파이썬 3.10 이상, 외부 패키지 없음.
 
 ## 주최에 넘길 때 (수상 시 원천 소스 제공)
 
@@ -64,4 +68,5 @@
 
 ## 공모전 뒤 정리할 것
 
-- 맥미니 Hermes 예약 작업 `kspo-parking`(5분마다 수집, 공모전 근거용)은 제출 뒤 지운다. 이 저장소의 Actions 수집과 별개다.
+- 맥미니 Hermes 예약 작업 `kspo-parking`(5분마다 수집, 공모전 근거용, 이 저장소와 별개 파일)은 제출 뒤 지운다.
+- 맥미니 Hermes 예약 작업 `kspo-forecast`는 Actions가 다시 돌면 지운다.
