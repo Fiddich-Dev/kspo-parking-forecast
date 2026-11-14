@@ -1,0 +1,61 @@
+:root {
+  --bg: #ffffff;
+  --fg: #191f28;
+  --muted: #4e5968; /* 흰 바탕 7.1:1, 카드 바탕 6.6:1 */
+  --line: #d1d6db;
+  --accent: #1b64da; /* 흰 바탕 5.4:1, 카드 바탕 5.0:1 */
+  --card: #f4f6f8;
+  --g-free-bg: #e3f4e8; --g-free-fg: #0b5a2a;
+  --g-mid-bg: #fff3d1; --g-mid-fg: #5e4400;
+  --g-busy-bg: #ffe0cc; --g-busy-fg: #7a3300;
+  --g-full-bg: #fbd5d5; --g-full-fg: #7f0b0b;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; word-break: keep-all; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 8px; background: var(--bg); padding: 8px; z-index: 10; }
+header { border-bottom: 1px solid var(--line); padding: 12px 16px 0; position: sticky; top: 0; background: var(--bg); z-index: 5; }
+h1 { margin: 0 0 8px; font-size: 20px; }
+h1 a { color: var(--fg); text-decoration: none; }
+nav { display: flex; gap: 4px; overflow-x: auto; }
+nav a { padding: 10px 12px; text-decoration: none; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; font-weight: 600; }
+nav a[aria-current="page"] { color: var(--fg); border-bottom-color: var(--fg); }
+main { max-width: 760px; margin: 0 auto; padding: 16px; }
+main:focus { outline: none; }
+h2 { font-size: 22px; margin: 8px 0 12px; }
+h3 { font-size: 18px; margin: 24px 0 8px; }
+.card { background: var(--card); border-radius: 12px; padding: 16px; margin: 12px 0; }
+.big { font-size: 34px; font-weight: 700; line-height: 1.2; }
+.muted { color: var(--muted); font-size: 14px; }
+.label { display: inline-block; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 6px; border: 1px solid currentColor; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 8px 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; font-weight: 700; }
+.advice { border: 2px solid var(--g-full-fg); color: var(--g-full-fg); background: var(--g-full-bg); border-radius: 12px; padding: 12px 16px; }
+svg.chart { width: 100%; height: auto; display: block; }
+.chart text { font-size: 11px; fill: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; margin: 8px 0; padding: 0; list-style: none; }
+.sw { display: inline-block; width: 18px; height: 4px; vertical-align: middle; margin-right: 4px; }
+.scroll { overflow-x: auto; max-width: 100%; }
+table { border-collapse: collapse; font-size: 14px; }
+th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+table.grid th, table.grid td { padding: 0; text-align: center; border: 1px solid #fff; }
+table.grid td { width: 26px; height: 32px; font-weight: 700; font-size: 13px; }
+table.grid th[scope="row"] { text-align: left; padding: 2px 6px; white-space: nowrap; font-weight: 600; background: var(--bg); position: sticky; left: 0; }
+table.grid thead th { font-weight: 600; font-size: 12px; color: var(--muted); }
+.g-free { background: var(--g-free-bg); color: var(--g-free-fg); }
+.g-mid { background: var(--g-mid-bg); color: var(--g-mid-fg); }
+.g-busy { background: var(--g-busy-bg); color: var(--g-busy-fg); }
+.g-full { background: var(--g-full-bg); color: var(--g-full-fg); }
+ul.events { list-style: none; padding: 0; margin: 0; }
+ul.events li { border-bottom: 1px solid var(--line); }
+ul.events a { display: block; padding: 12px 4px; text-decoration: none; color: var(--fg); }
+ul.events a:hover strong { text-decoration: underline; }
+button { font: inherit; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--fg); background: var(--bg); color: var(--fg); cursor: pointer; min-height: 44px; }
+details summary { cursor: pointer; color: var(--accent); padding: 8px 0; }
+footer { max-width: 760px; margin: 24px auto; padding: 16px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+#demo-caption { position: fixed; left: 12px; right: 12px; bottom: 12px; background: #191f28; color: #fff; padding: 12px 16px; border-radius: 12px; font-size: 16px; z-index: 20; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
