@@ -3,6 +3,10 @@
 const $main = document.getElementById("main");
 const D = {};
 const TRANSIT = "공원 내 대형행사가 개최될 경우 주차장이 혼잡하오니 반드시 버스, 지하철 등 대중교통을 이용해 주시기 바랍니다.";
+// 실시간 주차현황 API 키. 주최(한국체육산업개발)가 누리집 공공데이터 개방목록에 공개한 키다:
+// https://www.ksponco.or.kr/pubData/64?mid=a10106020000 (사용자 결정 2026-11-14: 화면 코드에 넣어도 된다).
+// 다른 키(문화공공데이터광장, 공공데이터포털)는 화면에 넣지 않는다.
+const PARKING_API = "https://www.ksponco.or.kr/online/main/parkingorsApi.do?apiKey=PARKING21803504";
 const GRADES = [[0.9, "만차", "만", "g-full"], [0.7, "혼잡", "혼", "g-busy"], [0.5, "보통", "보", "g-mid"], [0, "여유", "여", "g-free"]];
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -20,6 +24,20 @@ async function load() {
   if (!D.fc) { $main.innerHTML = "<p>자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</p>"; return; }
   document.getElementById("updated").textContent = `예보 마지막 갱신 ${tm(D.fc.generated_at)} · 일정 읽은 시각 ${tm(D.ev?.read_at)}`;
   route();
+  loadLive();
+}
+
+// 방문자 브라우저가 주최 API를 직접 부른다. 실패하면 30분마다 기록한 값(now.json)을 그대로 보인다.
+async function loadLive() {
+  try {
+    const ctl = new AbortController();
+    setTimeout(() => ctl.abort(), 8000);
+    const j = await (await fetch(PARKING_API, { signal: ctl.signal, cache: "no-store" })).json();
+    const v = Number(j?.[0]?.parking_sum);
+    if (!Number.isFinite(v)) return;
+    D.live = { at: new Date().toISOString(), value: v };
+    if ((location.hash.slice(1) || "now").startsWith("now")) route();
+  } catch { /* 30분 갱신 값으로 둔다 */ }
 }
 
 // ---------- 그래프 ----------
@@ -52,11 +70,12 @@ function viewNow() {
   const n = D.now || {}, bc = n.baseline || {};
   const nowMin = (() => { const d = new Date(Date.now() + 9 * 3600e3); return d.getUTCHours() * 60 + d.getUTCMinutes(); })();
   const pts = bc.confirmed ? (n.today || []).map(([t, v]) => [t, v - bc.offset]) : [];
-  const stale = n.last && Date.now() - new Date(n.last.at) > 90 * 60e3;
+  const last = D.live || n.last;
+  const stale = !D.live && last && Date.now() - new Date(last.at) > 90 * 60e3;
   let h = `<h2>지금 <span class="muted">${dayLabel(day.date)} ${esc(day.type_ko)}</span></h2>`;
   h += `<section class="card" aria-labelledby="rt"><h3 id="rt" style="margin-top:0">실시간 주차대수 (동2문·남2문·북2문 합계)</h3>`;
-  h += `<p class="big">${n.last ? fmt(n.last.value) + "대" : "값 없음"}</p><p class="muted">주최 제공 값 · ${tm(n.last?.at)} 수집${stale ? " · <strong>마지막 수집이 90분 넘게 지났습니다</strong>" : ""}</p>`;
-  if (bc.confirmed) h += `<p>보정값(새벽 최저값 기준) <strong>${fmt(n.last.value - bc.offset)}대</strong> · 2,200대 중 ${Math.round((100 * (n.last.value - bc.offset)) / D.fc.cap)}%</p>`;
+  h += `<p class="big">${last ? fmt(last.value) + "대" : "값 없음"}</p><p class="muted">주최 제공 값 · ${tm(last?.at)} ${D.live ? "주최 API에서 방금 받음" : "기록(30분마다)"}${stale ? " · <strong>마지막 수집이 90분 넘게 지났습니다</strong>" : ""}</p>`;
+  if (bc.confirmed) h += `<p>보정값(새벽 최저값 기준) <strong>${fmt(last.value - bc.offset)}대</strong> · 2,200대 중 ${Math.round((100 * (last.value - bc.offset)) / D.fc.cap)}%</p>`;
   else h += `<p class="muted">이 값에는 출차 기록이 없는 차가 쌓여 있는 것으로 보입니다(새벽 최저 ${fmt(Object.values(bc.nights || {}).slice(-1)[0])}대, 2024년 7월 같은 시각 평균 ${fmt(bc.night_ref_2024_07)}대). 여러 밤의 기록으로 확인하기 전에는 점유율과 만차 판단에 쓰지 않습니다. <a href="#score">확인 현황</a></p>`;
   h += `</section>`;
   if (day.transit_advice) h += `<p class="advice" role="note"><strong>오늘은 대중교통을 권합니다.</strong> 예보 범위의 높은 값이 90%를 넘습니다. 주최 안내: “${TRANSIT}”</p>`;

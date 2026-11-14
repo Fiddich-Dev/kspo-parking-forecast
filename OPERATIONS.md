@@ -32,7 +32,7 @@
 
 ## 키 (저장소 비밀값)
 
-코드, 문서, 로그, 커밋에 키를 쓰지 않는다. 저장소 Settings → Secrets and variables → Actions에만 둔다. 호출 기록(`site/data/calls.json`)에는 키를 `***`로 가린 주소만 남는다.
+코드, 문서, 로그, 커밋에 키를 쓰지 않는다. 저장소 Settings → Secrets and variables → Actions에만 둔다. 예외 하나: 실시간 주차현황 키는 주최가 누리집에 공개한 값이라 `site/app.js`에도 들어 있다(방문자 브라우저가 주최 API를 직접 불러 「지금」 값을 바로 받는다. 실패하면 30분마다 기록한 값을 보인다). 이 키가 바뀌면 비밀값과 `site/app.js`의 `PARKING_API` 두 곳을 고친다. 호출 기록(`site/data/calls.json`)에는 키를 `***`로 가린 주소만 남는다.
 
 | 비밀값 이름 | 무엇 | 어디서 받나 |
 |---|---|---|
