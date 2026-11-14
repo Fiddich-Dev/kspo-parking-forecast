@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=10"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="title" content="일정안내 | 이미지보기 | 일정안내 | 올림픽공원 공연/행사안내 | 문화공간 : 올림픽공원 홈페이지 입니다." />
+    <meta name="description" content="올림픽공원 홈페이지 입니다.,일정안내 | 이미지보기 | 일정안내 | 올림픽공원 공연/행사안내 | 문화공간" />
+    <meta name="keyword" content="올림픽공원, 한국체육산업개발">
+    <meta name="author" content="올림픽공원">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="올림픽공원 홈페이지 입니다.">
+    <meta property="og:title" content="일정안내 | 이미지보기 | 일정안내 | 올림픽공원 공연/행사안내 | 문화공간 : 올림픽공원 홈페이지 입니다.">
+    <meta property="og:url" content="https://www.ksponco.or.kr/olympicpark">
+    <meta property="og:description" content="올림픽공원 홈페이지 입니다.">
+    <meta property="og:image" content="/img/common/og_image.png">
+    <meta charset="UTF-8"/>
+
+	
+	<title>일정안내</title>
+	
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/olympicpark/img/common/apple-touch-icon-57x57.png">
+    <link rel="icon" type="image/png" href="/olympicpark/img/common/favicon-16x16.png" sizes="16x16">
+    <link id="contextPathHolder" data-contextPath="/olympicpark"/>
+    <link rel="stylesheet" href="/olympicpark/css/common.css">
+    <link rel="stylesheet" href="/olympicpark/css/webfonts.css">
+        
+    <link rel="stylesheet" href="/olympicpark/css/layout.css">
+    <link rel="stylesheet" href="/olympicpark/css/sub.css">
+	
+    <script src="/olympicpark/ease_src/sEditor/js/HuskyEZCreator.js"></script>
+    <script src="/olympicpark/jquery/jquery-3.2.1.min.js"></script>
+    <script src="/olympicpark/jquery/slick.min.js"></script>
+    <script src="/olympicpark/js/func.min.js"></script>
+    <script src="/olympicpark/js/global.js"></script>
+    <script src="/olympicpark/js/common.js"></script>
+    <script src="/olympicpark/js/sub.js"></script>
+    <script src="/olympicpark/js/board.js"></script>
+    <script src="/olympicpark/js/event.js"></script>
+    <script src="/olympicpark/js/boardForm.js?S=&amp;bid=&amp;b_html_yn=&amp;b_editor=&amp;b_cg_yn=&amp;b_priority_yn=&amp;b_type=&amp;b_wr_auth="></script>
+
+    <!-- 카카오톡 공유하기 -->
+    <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script type="text/javascript">
+
+        var contextPath = $('#contextPathHolder').attr('data-contextPath') ? $('#contextPathHolder').attr('data-contextPath') : '';
+
+        var NOW_YEAR;
+        var NOW_MONTH;
+        var NOW_DAY;
+        var PLC="";
+        var mid = ["a20301010100"];
+
+        $(document).ready(function(){
+            var now			= new Date();
+            var nowYear		= now.getFullYear();
+            nowYear		+= (nowYear < 2000) ? 1900 : 0;
+            var nowMonth	= addzero(now.getMonth() + 1);
+            var nowDay		= addzero(now.getDate());
+            var nowWeek		= now.getDay();
+            var nowYmd = nowYear + "." + nowMonth + "." + nowDay;
+
+            $('#spanYmd').html( nowYear + "." + nowMonth);
+            checkOnMonth(nowMonth);
+
+            NOW_YEAR = nowYear;
+            NOW_MONTH = now.getMonth();
+            NOW_DAY = now.getDate();
+
+            $(".monthLi").click(function(){
+                var clickMonth = $(this).parent().attr("id");
+                clickMonth = clickMonth.substr(8);
+                //월 active
+                checkOnMonth(clickMonth);
+                if(clickMonth.substr(0,1) == 0){
+                    clickMonth = clickMonth.substr(1,1)
+                }
+                clickMonth = parseInt(clickMonth)-1;
+                NOW_MONTH = clickMonth;
+                $('#spanYmd').html( NOW_YEAR + "." + addzero(NOW_MONTH+1));
+                eventInfoListAjax();
+
+            })
+
+            // plc_cd
+            // 01 올림픽홀
+            // 02 KSPO DOME(체조경기장)
+            // 03 핸드볼
+            // 04 우리금융아트홀
+            // 05 K-아트홀
+            // 06 기타
+            // 07 뮤즈라이브
+            $(".plcLi").click(function(){
+                var plc_cd;
+                var clickPlc = $(this).parent().attr("id");
+                clickPlc = clickPlc.substr(6);
+                checkOnPlc(clickPlc);
+
+                if(clickPlc==0){
+                    plc_cd = '';
+                }else if(clickPlc==1){
+                    plc_cd = '02';
+                }else if(clickPlc==2){
+                    plc_cd = '03';
+                }else if(clickPlc==3){
+                    plc_cd = '01';
+                }else if(clickPlc==4){
+                    plc_cd = '07';
+                }else if(clickPlc==5){
+                    plc_cd = '04';
+                }else if(clickPlc==6){
+                    plc_cd = '05';
+                }else if(clickPlc==7){
+                    plc_cd = '06';
+                }
+                PLC = plc_cd;
+                eventInfoListAjax();
+            })
+        })
+        //10보다 작으면 앞에 0을 붙임
+        function addzero(n){
+            return n < 10 ? "0" + n : n;
+        }
+
+        function timeStMonth(d) {
+            var yyyy = d.getFullYear();
+            var MM = d.getMonth() + 1;
+
+            return (yyyy + '.' + addzero(MM));
+        }
+        function resetDate(d) {
+            NOW_YEAR = d.getFullYear();
+            NOW_MONTH = d.getMonth();
+            NOW_DAY = d.getDate();
+        }
+        function checkOnMonth(m){
+			/* $("#tabMonth02").removeClass('active');
+            $("#tabMonth03").removeClass('active');
+            $("#tabMonth04").removeClass('active');
+            $("#tabMonth05").removeClass('active');
+            $("#tabMonth06").removeClass('active');
+            $("#tabMonth07").removeClass('active');
+            $("#tabMonth08").removeClass('active');
+            $("#tabMonth09").removeClass('active');
+            $("#tabMonth10").removeClass('active');
+            $("#tabMonth11").removeClass('active');
+            $("#tabMonth12").removeClass('active'); */
+
+            $(".schedule_month_tab_wrap > .tabs > li").removeClass('active').find("a").attr("title", "비활성 탭메뉴");
+			$("#tabMonth"+m).addClass('active').find("a").attr("title", "선택된 탭메뉴");	
+        }
+        function checkOnPlc(m){
+           /*  $("#plcTab0").removeClass('active');
+            $("#plcTab1").removeClass('active');
+            $("#plcTab2").removeClass('active');
+            $("#plcTab3").removeClass('active');
+            $("#plcTab4").removeClass('active');
+            $("#plcTab5").removeClass('active');
+            $("#plcTab6").removeClass('active');
+            $("#plcTab7").removeClass('active'); */
+
+			$("#plcTabs > li").removeClass('active').find("a").attr("title", "비활성 탭메뉴");
+            $("#plcTab"+m).addClass('active').find("a").attr("title", "선택된 탭메뉴");
+        }
+        function monthMove(move){
+            if(move == 'left'){
+                //var monthDate = new Date(NOW_YEAR,NOW_MONTH -1 ,NOW_DAY);
+                //monthDate.setDate(monthDate.getDate() + 1);
+                var monthDate = new Date(NOW_YEAR,NOW_MONTH,"");
+                monthStartDate	= new Date(monthDate.getFullYear(), monthDate.getMonth());
+                monthEndDate	= new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, "");
+                resetDate(monthStartDate);
+                $('#spanYmd').html(timeStMonth(monthStartDate));
+                checkOnMonth(addzero(NOW_MONTH+1));
+
+
+            }else{
+                var monthDate = new Date(NOW_YEAR,NOW_MONTH,NOW_DAY);
+                var monthDate2 = new Date(NOW_YEAR,NOW_MONTH +1,"");
+                monthDate.setDate(monthDate2.getDate() + 1);
+                monthStartDate	= new Date(monthDate.getFullYear(), monthDate.getMonth());
+                monthEndDate	= new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, "");
+                resetDate(monthStartDate);
+                $('#spanYmd').html(timeStMonth(monthStartDate));
+                checkOnMonth(addzero(NOW_MONTH+1));
+
+            }
+            eventInfoListAjax();
+        }
+        function eventInfoListAjax() {
+            var url = "\/olympicpark\/eventInfo\/eventInfoListAjax.es";
+            var year = String(NOW_YEAR);
+            var month = String(addzero(NOW_MONTH+1));
+            var StringPLC = String(PLC);
+            var param = {"nowYM" : year+month, "plcCd" : StringPLC};
+
+            $.ajax({
+                async: false,
+                type:'POST',
+                dataType: "json",
+                contentType:"application/json;charset=UTF-8",
+                data: JSON.stringify(param),
+                url:  url,
+                success:function(result) {
+                    console.log(result);
+                    $("#rowSpace").empty();
+                    $("#rowSpacePass").empty();
+                    var htmls="";
+                    var passHtmls="";
+                    $.each(result[0], function (index,item){
+                        htmls += '<div class="col-sm-6">';
+                        htmls += '    <a href="'+contextPath+'/eventInfo/eventInfoView.es?mid='+mid+'&evtSeq='+item.evtSeq+'" class="item">';
+                        htmls += '        <div class="photo">';
+                        htmls += '            <img src="'+contextPath+'/attachFiles/eventInfo/'+item.fileNm+'" onError="this.onerror=null;this.src=\''+contextPath+'/error/img/noimage_book.jpg\';"  alt="'+item.title+'"/>';
+                        htmls += '        </div>';
+                        htmls += '        <div class="info">';
+                        htmls += '            <em class="place">'+item.plc+'</em>';
+                        htmls += '            <strong class="title">'+item.title+'</strong>';
+                        htmls += '            <span class="date">'+item.beginDt+'~'+item.endDt+'</span>';
+                        htmls += '            <small class="time" >'+item.tm+'</small>';
+                        htmls += '        </div>';
+                        htmls += '    </a>';
+                        htmls += '</div>';
+                    })
+
+                    $.each(result[1], function (index,item){
+                        passHtmls += '<div class="col-sm-6">';
+                        passHtmls += '    <a href="'+contextPath+'/eventInfo/eventInfoView.es?mid='+mid+'&evtSeq='+item.evtSeq+'" class="item">';
+                        passHtmls += '        <div class="photo">';
+                        passHtmls += '            <img src="'+contextPath+'/attachFiles/eventInfo/'+item.fileNm+'" onError="this.onerror=null;this.src=\''+contextPath+'/error/img/noimage_book.jpg\';"  alt="'+item.title+'"/>';
+                        passHtmls += '        </div>';
+                        passHtmls += '        <div class="info">';
+                        passHtmls += '            <em class="place">'+item.plc+'</em>';
+                        passHtmls += '            <strong class="title">'+item.title+'</strong>';
+                        passHtmls += '            <span class="date">'+item.beginDt+'~'+item.endDt+'</span>';
+                        passHtmls += '            <small class="time" >'+item.tm+'</small>';
+                        passHtmls += '        </div>';
+                        passHtmls += '    </a>';
+                        passHtmls += '</div>';
+                    })
+                    $("#rowSpace").append(htmls);
+                    $("#rowSpacePass").append(passHtmls);
+                },
+                error:function(data,status,err) {
+                    alert("오류가 발생했습니다.");
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div id="skipNav">
+    <a href="#content">본문으로 바로가기 </a>
+    <a href="#gnb">주메뉴 바로가기</a>
+    <a href="#quick">빠른메뉴 바로가기</a>
+</div>
+<div id="wrap">
+    <header class="header">
+        <div class="gnb_site">
+            <div class="container">
+
+                
+<nav class="site_area">
+    <div class="list">
+        <a href="/"><span>한국체육산업개발(주)</span></a>
+        <a href="/olympicpark"><span>올림픽공원</span></a>
+        <a href="/sports"><span>스포츠센터</span></a>
+        <a href="/boatracepark"><span>미사경정공원</span></a>
+        <!--
+        <a href="/edu"><span>평생교육원</span></a>
+        -->
+        <a href="/lib"><span>지샘터도서관</span></a>
+        <a href="/recruit"><span>KSPO&amp;CO채용</span></a>
+        <a href="/onlinesports"><span>온라인스포츠센터</span></a>
+        <a href="/online" target="_blank"><span>온라인예약</span></a>
+        <a href="/culture/" target="_blank"><span>대관예약</span></a>
+        <a href="/spm" target="_blank"><span>수강신청</span></a>
+        <a href="/programProposal?mid=a10201060000"><span>프로그램제안</span></a>
+    </div>
+</nav>
+<nav class="site_area_mobile">
+    <a href="#siteAreaMobile" class="title" title="패밀리사이트열기">한국체육산업개발<i class="xi-angle-down-min"></i></a>
+    <div class="list_wrap" id="siteAreaMobile">
+        <div class="represent">
+            <a href="/"><img src="/olympicpark/img/common/gnb_site_represent.svg" alt=""><span>한국체육산업개발(주)</span></a>
+            <button type="button"><i class="xi-angle-down-min"></i></button>
+        </div>
+        <div class="list">
+            <ul class="group1">
+                <li><a href="/olympicpark"><span>올림픽공원</span></a></li>
+                <li><a href="/boatracepark"><span>미사경정공원</span></a></li>
+                <!-- <li><a href="/edu"><span>평생교육원</span></a></li> -->
+                <li><a href="/lib"><span>지샘터도서관</span></a></li>
+                <li><a href="/recruit"><span>KSPO&CO채용</span></a></li>
+                <li><a href="/onlinesports"><span>온라인스포츠센터</span></a></li>
+                <li><a href="/online" target="_blank"><span>온라인예약</span></a></li>
+                <li><a href="/culture/" target="_blank"><span>대관예약</span></a></li>
+                <li><a href="/programProposal?mid=a10201060000"><span>프로그램제안</span></a></li>
+            </ul>
+            <ul class="group2">
+                <li><a href="/sports"><span>스포츠센터</span></a></li>
+                <li><a href="/sports/olparkswim"><span>올림픽수영장</span></a></li>
+                <li><a href="/sports/olparksports"><span>올림픽공원스포츠센터</span></a></li>
+                <li><a href="/sports/olparktennis"><span>올림픽테니스장</span></a></li>
+                <li><a href="/sports/olparksoccer"><span>올팍축구장</span></a></li>
+                <li><a href="/sports/ilsansports"><span>일산올림픽스포츠센터</span></a></li>
+                <li><a href="/sports/bundangsports"><span>분당올림픽스포츠센터</span></a></li>
+                <li><a href="/spm" target="_blank"><span>온라인수강신청</span></a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+                <div class="gnb_util login">
+                    <ul class="nav">
+                        
+                        
+                        
+
+                        
+                            <li><a href="/memberLogin.es?mid=a10801000000"><i class="icon_login"></i><span>로그인</span></a></li>
+                            <li><a href="/join.es?mid=a10802000000"><i class="icon_join"></i><span>회원가입</span></a></li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <!-- //container -->
+        </div>
+        <!-- //gnb_site -->
+        <div class="gnb_area">
+            <div class="container">
+                <h1 class="logo">
+                    <a href="/olympicpark/" class="link"><span class="sr-only">올림픽공원</span></a>
+                </h1>
+                <div class="gnb_wrap">
+                    <nav class="nav" id="gnb">
+						
+							<h2 class="pop_title">사이트맵</h2>
+						
+						
+                        <span class="pop_eng_title" lang="en">Site map</span>
+                        
+<!-- eCMS v3.0 Generator Start. -->
+<ul id="head_menu" class="topmenu">
+    <li class="depth1">
+        <a href="/olympicpark/menu.es?mid=a20101000000">
+            <span>공원가이드</span>
+        </a>
+        <div class="submenu">
+            <div class="title_area">
+                <h3 class="title">공원가이드</h3>
+            </div>
+            <ul class="depth2">
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20101000000">
+                        공원이용정보
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20102000000" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                        공원안내도
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.ksponco.or.kr/vr/olympicpark/tour_01/tour.html" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                        공원사이버투어
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20104020000">
+                        놀이시설
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20104020000">
+                                자전거대여
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20105000000">
+                        체육시설
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20106010000">
+                        편의시설
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20106010000">
+                                공원이용시설
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20106020000">
+                                공원편의시설
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/map?mid=a20102000000#tab5" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                                편의시설 위치찾기
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20107010000">
+                        올림픽공원 9경
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20107010000">
+                                올림픽공원 9경
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20108000000">
+                        사랑나무연리목
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20112000000" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                        공원미세먼지정보
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20111000000">
+                        주차 안내
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.ksponco.or.kr/online/main/parking.do" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                        주차장 예상 이용률 안내
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20109000000">
+                        오시는 길
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="depth1">
+        <a href="/olympicpark/menu.es?mid=a20201020000">
+            <span>체육공간</span>
+        </a>
+        <div class="submenu">
+            <div class="title_area">
+                <h3 class="title">체육공간</h3>
+            </div>
+            <ul class="depth2">
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20201020000">
+                        스포츠교실
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20201020000">
+                                올림픽수영장
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20201010000">
+                                올림픽공원스포츠센터
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20202000000">
+                        산책/조깅코스
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20203000000">
+                        생활건강시설
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="depth1">
+        <a href="/olympicpark/menu.es?mid=a20301010000">
+            <span>문화공간</span>
+        </a>
+        <div class="submenu">
+            <div class="title_area">
+                <h3 class="title">문화공간</h3>
+            </div>
+            <ul class="depth2">
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20301010000">
+                        올림픽공원 공연/행사안내
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20301010100">
+                                일정안내
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20301030800">
+                                공연장안내
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/menu.es?mid=a10405010100" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                                시설대관
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20301060000">
+                                공연포스터 전시관
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20303010000">
+                        문화/예술시설
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20303010000">
+                                서울올림픽기념관
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20303020000">
+                                소마미술관
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20304010000">
+                        조각작품갤러리
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20304010000">
+                                조각공원 안내
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://soma.kspo.or.kr/piece/product/list" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                                조각작품 맵
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20305000000">
+                        공연장 투어 프로그램
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="depth1">
+        <a href="/olympicpark/menu.es?mid=a20401000000">
+            <span>생태공간</span>
+        </a>
+        <div class="submenu">
+            <div class="title_area">
+                <h3 class="title">생태공간</h3>
+            </div>
+            <ul class="depth2">
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20401000000">
+                        생태공원소개
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20402000000">
+                        잔디시설안내
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20403010000">
+                        장미광장
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20403010000">
+                                장미광장소개
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20403020000">
+                                장미광장현황
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20403030000">
+                                장미관람안내
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/gallery.es?mid=a20403040100&amp;bid=0022&amp;paramCd=rose">
+                                둘러보기
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20404000000">
+                        생태공원 갤러리
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="depth1">
+        <a href="/olympicpark/menu.es?mid=a20501000000">
+            <span>역사공간</span>
+        </a>
+        <div class="submenu">
+            <div class="title_area">
+                <h3 class="title">역사공간</h3>
+            </div>
+            <ul class="depth2">
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20501010000">
+                        올팍조성과 운영
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20501010000">
+                                공원조성배경
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20501030000">
+                                평화의성지 올팍
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20502000000">
+                        몽촌역사이야기
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20503010000">
+                        주변시설안내
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20503010000">
+                                한성백제박물관
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20503030000">
+                                서울역사편찬원
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="depth1">
+        <a href="/olympicpark/menu.es?mid=a20601000000">
+            <span>알림·홍보</span>
+        </a>
+        <div class="submenu">
+            <div class="title_area">
+                <h3 class="title">알림·홍보</h3>
+            </div>
+            <ul class="depth2">
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20601000000">
+                        올팍소식
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20602000000">
+                        보도자료
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20603000000">
+                        홍보동영상
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20604000000">
+                        포토갤러리
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20605000000">
+                        PI소개
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="depth1">
+        <a href="/olympicpark/menu.es?mid=a20701000000">
+            <span>고객센터</span>
+        </a>
+        <div class="submenu">
+            <div class="title_area">
+                <h3 class="title">고객센터</h3>
+            </div>
+            <ul class="depth2">
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20710000000">
+                        자주하는 질문
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20702000000">
+                        고객의 소리
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20703000000">
+                        전자민원
+                    </a>
+                </li>
+                <li>
+                    <a href="http://www.kspo.or.kr/kspo/main/contents.do?menuNo=200242" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                        제안하기
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20711000000">
+                        유실물 통합안내
+                    </a>
+                    <ul class="depth3">
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20711010000">
+                                공연장 분실물 안내
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/olympicpark/menu.es?mid=a20711020100">
+                                유실물센터
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="depth1">
+        <a href="/olympicpark/menu.es?mid=a20901000000">
+            <span>회원/기타</span>
+        </a>
+        <div class="submenu">
+            <div class="title_area">
+                <h3 class="title">회원/기타</h3>
+            </div>
+            <ul class="depth2">
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20901000000">
+                        회원이용약관
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20902000000">
+                        개인정보처리방침
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20903000000">
+                        고객서비스헌장
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20905000000">
+                        올림픽공원 APP 소개
+                    </a>
+                </li>
+                <li>
+                    <a href="/olympicpark/menu.es?mid=a20906000000">
+                        KSPO 소개
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+</ul>
+<!-- eCMS v3.0 Generator End. -->
+
+                        <button type="button" class="pop_close"><i class="xi-close"></i><span class="sr-only">전체메뉴 레이어 닫기</span></button>
+                    </nav>
+                </div>
+                <div class="btn_wrap">
+                    
+                        <a href="/olympicpark/english" class="btn_lang">
+                            <span>English</span>
+                        </a>
+                        <button class="btn_sch_open">
+                            <i class="xi-search"></i><span class="sr-only">검색열기</span><!-- 모바일 검색버튼-->
+                        </button>
+                        <div class="sch_layer">
+                            <!-- <form class="sch_form" name="sch_form" id="schForm" action="/totalSearch"> -->
+                            <form class="sch_form" name="sch_form" id="schForm" action="https://www.ksponco.or.kr/search/front/Search.jsp">
+                                <label for="allKeyWord" class="title sr-only">통합검색</label>
+                                <input type="text" name="qt" id="allKeyWord" placeholder="검색어를 입력해주세요">
+                                <button id="btnSch" class="btn_sch">
+                                    <i class="xi-search"></i><span class="sr-only">검색버튼</span>
+                                </button>
+                            </form>
+                            <button type="button" class="btn_sch_close">
+                                <i class="xi-close-thin"></i><span class="sr-only">검색 닫기</span>
+                            </button>
+                        </div><!-- //sch_layer -->
+                    
+                    
+                    <button type="button" class="btn_allmenu"><span class="sr-only">전체메뉴보기</span><i
+                            class="icon" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <!-- //container -->
+        </div>
+        <!-- //gnb_area -->
+    </header>
+
+    <main class="main">
+        
+    <div id="quick" class="quick">
+        <h2><i aria-hidden="true"></i><span><em lang="en">Quick</em>올팍</span></h2>
+        <nav>
+            <ul>
+    <li class="item_1">
+        <a href="https://www.ksponco.or.kr/vr/olympicpark/tour_01/tour.html"
+           target="_blank"
+           title="새창"
+           rel="noopener"
+        >
+            <i style="background-image:url(/olympicpark/upload/quick/a2/20220628165459435.png)"></i><span>사이버<br/>투어</span>
+        </a>
+    </li>
+    <li class="item_2">
+        <a href="/olympicpark/menu.es?mid=a20102000000"
+           target="_blank"
+           title="새창"
+           rel="noopener"
+        >
+            <i style="background-image:url(/olympicpark/upload/quick/a2/20220628165508777.png)"></i><span>공원<br/>안내도</span>
+        </a>
+    </li>
+    <li class="item_3">
+        <a href="/olympicpark/menu.es?mid=a20301010000"
+           target="_self"
+        >
+            <i style="background-image:url(/olympicpark/upload/quick/a2/20220628165515910.png)"></i><span>공연<br/>행사</span>
+        </a>
+    </li>
+    <li class="item_4">
+        <a href="/olympicpark/parkingInfo?mid=a20111000000"
+           target="_self"
+        >
+            <i style="background-image:url(/olympicpark/upload/quick/a2/20250220104107530.png)"></i><span>주차<br/>혼잡도</span>
+        </a>
+    </li>
+    <li class="item_5">
+        <a href="/olympicpark/menu.es?mid=a20109000000"
+           target="_self"
+        >
+            <i style="background-image:url(/olympicpark/upload/quick/a2/20250220110532679.png)"></i><span>오시는<br/>길</span>
+        </a>
+    </li>
+    <li class="item_6">
+        <a href="/olympicpark/menu.es?mid=a20106010000"
+           target="_self"
+        >
+            <i style="background-image:url(/olympicpark/upload/quick/a2/20220628165544744.png)"></i><span>편의<br/>시설</span>
+        </a>
+    </li>
+    <li class="item_7">
+        <a href="https://www.ksponco.or.kr/culture"
+           target="_blank"
+           title="새창"
+           rel="noopener"
+        >
+            <i style="background-image:url(/olympicpark/upload/quick/a2/20220628165551538.png)"></i><span>대관<br/>예약</span>
+        </a>
+    </li>
+</ul>
+
+        </nav>
+    </div>
+
+        <!-- //quick -->
+		<div class="acctoggle">
+			<button type="button" class="acctoggle_contrast">
+				<i class="icon_contrast" aria-hidden="true"></i>
+				<span>흑백모드</span>
+			</button>
+			<button type="button" class="acctoggle_fontsize">
+				<i class="icon_fontsize" aria-hidden="true"></i>
+				<span>글자크기</span>
+			</button>
+		</div>
+        <!-- //acctoggle -->
+        <div class="sub_visual sub3">
+            <div class="container">
+                <h2 class="title">문화공간</h2>
+                <nav class="breadcrumbs">
+                    <ul>
+                        <li><a href="/olympicpark/index.es?sid=a2"><i class="xi-home-o"></i><span class="sr-only">Home</span></a></li>
+                        <li><span>문화공간</span></li>
+                        <li><span>올림픽공원 공연/행사안내</span></li>
+                        <li><strong class="current">일정안내</strong></li>
+                    </ul>
+                </nav>
+                <div class="util">
+                    <div class="sns">
+                        <form id="snsForm" name="snsForm" action="https://www.ksponco.or.kr/olympicpark/apis/sns.es" method="post">
+                            <input type="hidden" name="title" value="일정안내 | 이미지보기 | 일정안내 | 올림픽공원 공연/행사안내 | 문화공간" />
+                            <input type="hidden" name="mid" value="a20301010100" />
+                            <input type="hidden" name="url" value="" />
+                            <input type="submit" value="전송" style="display:none;height:0;width:0;" />
+                        </form>
+                        <button class="sns_btn"><span class="sr-only">SNS공유</span><i class="xi-share-alt-o"></i></button>
+                        <div class="sns_list">
+                            <ul id="share">
+                                <li class="sns_icon01"><a href="#share" onclick="snsApi('facebook'); return false;" title="페이스북 공유(새창)"><span class="sr-only">페이스북</span><i class="xi-facebook"></i></a></li>
+                                <li class="sns_icon02"><a href="#share" onclick="snsApi('twitter'); return false;" title="트위터 공유(새창)"><span class="sr-only">트위터</span><i class="xi-twitter"></i></a></li>
+                                <!-- <li class="sns_icon03"><a href="#share" onclick="snsApi('blog'); return false;" title="블로그 공유 (새창)"><span class="sr-only">블로그</span><i class="xi-naver"></i></a></li> -->
+                                <li class="sns_icon04"><a  href="javascript:;" id="kakao-link-btn" title="카카오톡 공유(새창)"><span class="sr-only">카카오톡</span><i class="xi-kakaotalk"></i></a></li>
+                                <li class="sns_icon05"><a href="#" onclick="urlToClip();"><span class="sr-only">URL공유</span><i class="xi-link"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--//sns-->
+                    <a href="javascript:window.print();" class="print_btn"><span class="sr-only">프린트하기</span><i
+                            class="xi-print"></i></a>
+                    <!--<button type="button" class="fontsize_btn">
+                        <span class="sr-only">글자크기</span>
+                        <i class="xi-text-size"></i>
+                    </button>-->
+                </div>
+                <!-- //util -->
+            </div>
+        </div><!-- //sub_visual-->
+        <div class="snb_content_wrap container">
+            <section id="snb" class="snb_section">
+                <div class="snb">
+                    <h2 class="title">문화공간</h2>
+                    <nav class="nav">
+                        
+<!-- eCMS v3.0 Generator Start. -->
+<ul id="left_menu_top" class="depth2">
+    <li id="li0301000000">
+        <a href="/olympicpark/menu.es?mid=a20301010000">
+            올림픽공원 공연/행사안내
+        </a>
+        <ul class="depth3">
+            <li id="li0301010000">
+                <a href="/olympicpark/menu.es?mid=a20301010100">
+                    일정안내
+                </a>
+            </li>
+            <li id="li0301030000">
+                <a href="/olympicpark/menu.es?mid=a20301030800">
+                    공연장안내
+                </a>
+            </li>
+            <li id="li0301050000">
+                <a href="/menu.es?mid=a10405010100" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                    시설대관
+                </a>
+            </li>
+            <li id="li0301060000">
+                <a href="/olympicpark/menu.es?mid=a20301060000">
+                    공연포스터 전시관
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li id="li0303000000">
+        <a href="/olympicpark/menu.es?mid=a20303010000">
+            문화/예술시설
+        </a>
+        <ul class="depth3">
+            <li id="li0303010000">
+                <a href="/olympicpark/menu.es?mid=a20303010000">
+                    서울올림픽기념관
+                </a>
+            </li>
+            <li id="li0303020000">
+                <a href="/olympicpark/menu.es?mid=a20303020000">
+                    소마미술관
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li id="li0304000000">
+        <a href="/olympicpark/menu.es?mid=a20304010000">
+            조각작품갤러리
+        </a>
+        <ul class="depth3">
+            <li id="li0304010000">
+                <a href="/olympicpark/menu.es?mid=a20304010000">
+                    조각공원 안내
+                </a>
+            </li>
+            <li id="li0304020000">
+                <a href="https://soma.kspo.or.kr/piece/product/list" target="_blank" rel="noopener noreferrer" title="새창으로 이동" class="linkWindow">
+                    조각작품 맵
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li id="li0305000000">
+        <a href="/olympicpark/menu.es?mid=a20305000000">
+            공연장 투어 프로그램
+        </a>
+    </li>
+</ul>
+<!-- eCMS v3.0 Generator End. -->
+
+                    </nav>
+                </div>
+            </section>
+            <div id="content" class="content_section">
+                <h3 class="title_h1">일정안내</h3>
+                
+                    
+<!-- eCMS v3.0 Generator Start. -->
+<ul id="depth4_menu_ul" class="list depth4">
+    <li id="tab_li0301010100">
+        <a href="/olympicpark/menu.es?mid=a20301010100">이미지보기</a>
+    </li>
+    <li id="tab_li0301010200">
+        <a href="/olympicpark/menu.es?mid=a20301010200">텍스트보기</a>
+    </li>
+    <li id="tab_li0301010300" class="last">
+        <a href="/olympicpark/menu.es?mid=a20301010300">캘린더보기</a>
+    </li>
+</ul>
+<!-- eCMS v3.0 Generator End. -->
+
+                
+                
+    <div class="concert_view">
+        <div class="cal_select">
+            <button type="button" onclick="monthMove('left')" class="btn_prev"><i class="sr-only">이전월</i></button>
+            <strong id="spanYmd">2022. 1</strong>
+            <button type="button" onclick="monthMove('right')" class="btn_next"><i class="sr-only">다음월</i></button>
+        </div>
+        <!-- //cal_select -->
+        <nav class="schedule_month_tab_wrap">
+            <ul class="tabs">
+                <li class="active" id="tabMonth01">
+                    <a href="javascript:void(0);" class="monthLi" title="선택된 탭메뉴">1월</a>
+                </li>
+                <li id="tabMonth02">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">2월</a>
+                </li>
+                <li id="tabMonth03">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">3월</a>
+                </li>
+                <li id="tabMonth04">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">4월</a>
+                </li>
+                <li id="tabMonth05">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">5월</a>
+                </li>
+                <li id="tabMonth06">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">6월</a>
+                </li>
+                <li id="tabMonth07">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">7월</a>
+                </li>
+                <li id="tabMonth08">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">8월</a>
+                </li>
+                <li id="tabMonth09">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">9월</a>
+                </li>
+                <li id="tabMonth10">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">10월</a>
+                </li>
+                <li id="tabMonth11">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">11월</a>
+                </li>
+                <li id="tabMonth12">
+                    <a href="javascript:void(0);" class="monthLi" title="비활성 탭메뉴">12월</a>
+                </li>
+            </ul>
+        </nav>
+        <!-- //schedule_month_tab_wrap -->
+        <nav class="schedule_place_tab_wrap">
+            <ul class="tabs" id="plcTabs">
+                <li class="active" id="plcTab0">
+                    <a href="javascript:void(0);" class="plcLi" title="선택된 탭메뉴">전체보기</a>
+                </li>
+                <li id="plcTab1">
+                    <a href="javascript:void(0);" class="plcLi" title="비활성 탭메뉴">KSPO DOME<br/>(올림픽체조경기장)</a>
+                </li>
+                <li id="plcTab2">
+                    <a href="javascript:void(0);" class="plcLi" title="비활성 탭메뉴">티켓링크 라이브 아레나<br/>(핸드볼경기장)</a>
+                </li>
+                <li id="plcTab3">
+                    <a href="javascript:void(0);" class="plcLi" title="비활성 탭메뉴">올림픽홀</a>
+                </li>
+                <li id="plcTab4">
+                    <a href="javascript:void(0);" class="plcLi" title="비활성 탭메뉴">뮤즈라이브</a>
+                </li>
+                <li id="plcTab5">
+                    <a href="javascript:void(0);" class="plcLi" title="비활성 탭메뉴">우리금융아트홀<br/>(올림픽역도경기장)</a>
+                </li>
+                <li id="plcTab6">
+                    <a href="javascript:void(0);" class="plcLi" title="비활성 탭메뉴">K-아트홀</a>
+                </li>
+                <li id="plcTab7">
+                    <a href="javascript:void(0);" class="plcLi" title="비활성 탭메뉴">옥외/기타</a>
+                </li>
+            </ul>
+        </nav>
+        <!-- //schedule_place_tab_wrap -->
+        <div class="schedule_list thumb">
+            <div class="row" id="rowSpace">
+                <div class="col-sm-6" >
+                    <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5136" class="item">
+                        <div class="photo">
+                            <img src="/olympicpark/attachFiles/eventInfo/202610011607581611.jpg" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="최현우 30주년 기념 공연 - LEGACY">
+<!--                            <img th:src="@{/attachFiles/eventInfo/__${rs.fgrImage}__}"  th:alt="${rs.title}" />-->
+                        </div>
+                        <div class="info">
+                            <em class="place">올림픽공원 우리금융아트홀</em>
+                            <strong class="title">최현우 30주년 기념 공연 - LEGACY</strong>
+                            <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                            <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                            </th:block> -->
+                            <span class="date">2026-11-28 ~ 2027-01-03</span>
+                            <small class="time">수목금 19시 30분 / 토 15시, 19시 / 일 14시 (일자별 공연 시간 변동 있으며, 상세페이지 참고 부탁드립니다. )</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6" >
+                    <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5159" class="item">
+                        <div class="photo">
+                            <img src="/olympicpark/attachFiles/eventInfo/202609181647014471.jpg" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="[서울] 2026 조용필 ＆ 위대한탄생 콘서트">
+<!--                            <img th:src="@{/attachFiles/eventInfo/__${rs.fgrImage}__}"  th:alt="${rs.title}" />-->
+                        </div>
+                        <div class="info">
+                            <em class="place">KSPO DOME</em>
+                            <strong class="title">[서울] 2026 조용필 ＆ 위대한탄생 콘서트</strong>
+                            <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                            <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                            </th:block> -->
+                            <span class="date">2026-11-27 ~ 2026-11-29</span>
+                            <small class="time">2026년 11월 27일(금) 오후 7시 2026년 11월 28일(토) 오후 6시 2026년 11월 29일(일) 오후 5시</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6" >
+                    <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5168" class="item">
+                        <div class="photo">
+                            <img src="/olympicpark/attachFiles/eventInfo/202610301649241591.gif" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="2026 다이나믹 듀오 단독 콘서트 ＂가끔씩 오래 보자＂ - 서울">
+<!--                            <img th:src="@{/attachFiles/eventInfo/__${rs.fgrImage}__}"  th:alt="${rs.title}" />-->
+                        </div>
+                        <div class="info">
+                            <em class="place">올림픽홀</em>
+                            <strong class="title">2026 다이나믹 듀오 단독 콘서트 ＂가끔씩 오래 보자＂ - 서울</strong>
+                            <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                            <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                            </th:block> -->
+                            <span class="date">2026-11-27 ~ 2026-11-29</span>
+                            <small class="time">2026년 11월 27일(금) 8PM / 2026년 11월 28일(토) 6PM / 2026년 11월 29일(일) 5PM</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6" >
+                    <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5158" class="item">
+                        <div class="photo">
+                            <img src="/olympicpark/attachFiles/eventInfo/202609181746438231.gif" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="2026-27 로이킴 LIVE TOUR ［R:O:Y］ in SEOUL">
+<!--                            <img th:src="@{/attachFiles/eventInfo/__${rs.fgrImage}__}"  th:alt="${rs.title}" />-->
+                        </div>
+                        <div class="info">
+                            <em class="place">KSPO DOME</em>
+                            <strong class="title">2026-27 로이킴 LIVE TOUR ［R:O:Y］ in SEOUL</strong>
+                            <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                            <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                            </th:block> -->
+                            <span class="date">2026-11-21 ~ 2026-11-22</span>
+                            <small class="time">2026.11.21.(SAT) 6PM  2026.11.22.(SUN) 5PM</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6" >
+                    <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5167" class="item">
+                        <div class="photo">
+                            <img src="/olympicpark/attachFiles/eventInfo/202610070908462081.jpg" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="2026 CRAVITY CONCERT 〈SONOROUS〉 in Seoul">
+<!--                            <img th:src="@{/attachFiles/eventInfo/__${rs.fgrImage}__}"  th:alt="${rs.title}" />-->
+                        </div>
+                        <div class="info">
+                            <em class="place">올림픽홀</em>
+                            <strong class="title">2026 CRAVITY CONCERT 〈SONOROUS〉 in Seoul</strong>
+                            <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                            <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                            </th:block> -->
+                            <span class="date">2026-11-14 ~ 2026-11-15</span>
+                            <small class="time">2026년 11월 14일(토) ~ 11월 15(일)   토 오후 6시 / 일 오후 4시 </small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6" >
+                    <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5165" class="item">
+                        <div class="photo">
+                            <img src="/olympicpark/attachFiles/eventInfo/202610011444187881.gif" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="TOMORROW X TOGETHER WORLD TOUR 〈STEAL THE WIND〉 IN SEOUL">
+<!--                            <img th:src="@{/attachFiles/eventInfo/__${rs.fgrImage}__}"  th:alt="${rs.title}" />-->
+                        </div>
+                        <div class="info">
+                            <em class="place">KSPO DOME</em>
+                            <strong class="title">TOMORROW X TOGETHER WORLD TOUR 〈STEAL THE WIND〉 IN SEOUL</strong>
+                            <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                            <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                            </th:block> -->
+                            <span class="date">2026-11-13 ~ 2026-11-15</span>
+                            <small class="time">11월 13일 금 7PM(KST) 11월 14일 토 6PM(KST) 1월 15일 일 5PM(KST)</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="last">
+            <div class="box txt_center point2">
+                <p>지난 공연은 아래에서 확인하실 수 있습니다.</p>
+            </div>
+            <div class="schedule_list thumb last">
+                <div class="row" id="rowSpacePass">
+                    <div class="col-sm-6">
+                        <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5166" class="item">
+                            <div class="photo">
+                                <img src="/olympicpark/attachFiles/eventInfo/202610070905137281.gif" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="2026 박재정 콘서트 - 기록">
+                            </div>
+                            <div class="info">
+                                <em class="place">올림픽홀</em>
+                                <strong class="title">2026 박재정 콘서트 - 기록</strong>
+                                <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                                    <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                                </th:block> -->
+                                <span class="date">2026-11-07 ~ 2026-11-08</span>
+                                <small class="time">2026년 11월 7일(토) 18:00 / 2026년 11월 8일(금) 17:00</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5169" class="item">
+                            <div class="photo">
+                                <img src="/olympicpark/attachFiles/eventInfo/202610070917376911.gif" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="코리아발레스타즈 호두까기인형">
+                            </div>
+                            <div class="info">
+                                <em class="place">올림픽공원 우리금융아트홀</em>
+                                <strong class="title">코리아발레스타즈 호두까기인형</strong>
+                                <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                                    <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                                </th:block> -->
+                                <span class="date">2026-11-07 ~ 2026-11-08</span>
+                                <small class="time">11월 7일(토) 16시 / 11월 8일(일) 16시</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5157" class="item">
+                            <div class="photo">
+                                <img src="/olympicpark/attachFiles/eventInfo/202609181601375761.jpg" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="EXO PLANET #6 - EXhOrizon [dot] -">
+                            </div>
+                            <div class="info">
+                                <em class="place">KSPO DOME</em>
+                                <strong class="title">EXO PLANET #6 - EXhOrizon [dot] -</strong>
+                                <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                                    <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                                </th:block> -->
+                                <span class="date">2026-11-06 ~ 2026-11-08</span>
+                                <small class="time">금 오후 7시 / 토 오후 6시 / 일 오후 5시</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5164" class="item">
+                            <div class="photo">
+                                <img src="/olympicpark/attachFiles/eventInfo/202610011441076461.jpg" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="2026 WOODZ WORLD TOUR Archive. 1 : Completed">
+                            </div>
+                            <div class="info">
+                                <em class="place">KSPO DOME</em>
+                                <strong class="title">2026 WOODZ WORLD TOUR Archive. 1 : Completed</strong>
+                                <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                                    <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                                </th:block> -->
+                                <span class="date">2026-10-31 ~ 2026-11-01</span>
+                                <small class="time">토 오후 6시 / 일 오후 5시</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5156" class="item">
+                            <div class="photo">
+                                <img src="/olympicpark/attachFiles/eventInfo/202609181556258861.jpg" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="2026 ONEW CONCERT [ONEW THE LIVE : Q] IN SEOUL">
+                            </div>
+                            <div class="info">
+                                <em class="place">올림픽홀</em>
+                                <strong class="title">2026 ONEW CONCERT [ONEW THE LIVE : Q] IN SEOUL</strong>
+                                <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                                    <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                                </th:block> -->
+                                <span class="date">2026-10-30 ~ 2026-11-01</span>
+                                <small class="time">금 오후 7시 28분 / 토 오후 5시 / 일 오후 4시</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/olympicpark/eventInfo/eventInfoView.es?mid=a20301010100&amp;evtSeq=5155" class="item">
+                            <div class="photo">
+                                <img src="/olympicpark/attachFiles/eventInfo/202609161608077351.gif" onerror="this.src=&#39;/olympicpark/error/img/noimage_book.jpg&#39;"  alt="2026 심규선 단독 콘서트［SANCTUARY］">
+                            </div>
+                            <div class="info">
+                                <em class="place">올림픽공원 우리금융아트홀</em>
+                                <strong class="title">2026 심규선 단독 콘서트［SANCTUARY］</strong>
+                                <!-- <th:block th:with="sdf = ${new java.text.SimpleDateFormat('yyyyMMdd')}">
+                                    <span class="date" th:text="|${#dates.format(sdf.parse(rs.beginDt), 'yyyy-MM-dd')} ~ ${#dates.format(sdf.parse(rs.endDt), 'yyyy-MM-dd')}|"></span>
+                                </th:block> -->
+                                <span class="date">2026-10-24 ~ 2026-11-01</span>
+                                <small class="time">2026년 10월 24일 토요일 오후 6시 2026년 10월 25일 일요일 오후 5시 2026년 10월 31일 토요일 오후 6시 2026년 11월 1일 일요일 오후 5시</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- //schedule_list -->
+        </div>
+    </div>
+
+
+                
+            </div>
+			<!-- //content -->
+        </div>
+		<!-- //snb_content_wrap -->
+		<button type="button" class="go_top fixed"><i class="xi-arrow-up" aria-hidden="true"></i><span>TOP</span></button>       
+    </main>
+    <footer class="footer">
+        
+        <div class="container">
+            <nav class="footer_nav">
+                <a href="/olympicpark/menu.es?mid=a20902000000"><strong><u>개인정보처리방침</u></strong></a>
+                <a href="/olympicpark/menu.es?mid=a20109000000">오시는길</a>
+                <a href="/olympicpark/menu.es?mid=a20101000000">전화번호 안내</a>
+                <a href="/olympicpark/menu.es?mid=a20901000000">이용약관</a>
+                <a href="/olympicpark/menu.es?mid=a20907000000">이메일무단수집거부</a>
+                <a href="/olympicpark/menu.es?mid=a20908000000">저작권정책</a>
+            </nav>
+            <div class="footer_cont">
+                <div class="cont_left">
+                    <div class="footer_logo">
+                        <a href="/olympicpark" class="link"><span class="sr-only">올림픽공원</span></a>
+                    </div>
+                    <div class="address_group">
+                        <address>
+                            서울특별시 송파구 올림픽로 424<br>
+                            <strong>Tel</strong> <a href="tel:02-410-1114">02-410-1114</a>
+                            <strong>Fax</strong> <a href="tel:02-410-1988">02-410-1988</a>
+                        </address>
+
+						<div class="sns_nav_wrap">
+							<nav class="sns_list">
+								<a href="https://www.facebook.com/kspojoyolpark" target="_blank" title="새창으로 열림"><span class="sr-only">페이스북</span><i class="xi-facebook"></i></a>								
+								<a href="https://www.instagram.com/joy_olpark" target="_blank" title="새창으로 열림"><span class="sr-only">인스타그램</span><i class="xi-instagram"></i></a>								
+								<a href="https://www.youtube.com/user/enjoyolpark" target="_blank" title="새창으로 열림"><span class="sr-only">유튜브</span><i class="xi-youtube-play"></i></a>
+							</nav>
+							<div class="olpark_sns">
+								<button type="button" class="olpark_sns_open"><i class="xi-apps"></i><span class="sr-only">올림픽공원 SNS</span></button>
+								<ul class="olpark_sns_list">
+									<li><a href="https://www.facebook.com/kspojoyolpark" target="_blank"><i aria-hidden="true"><img src="/olympicpark/img/common/sns_facebook.png" alt=""></i><span>올림픽공원 페이스북</span></a></li>
+									<!--<li><a href="https://twitter.com/enjoyolpark" target="_blank"><i aria-hidden="true"><img th:src="@{/img/common/sns_twitter.png}" alt=""></i><span>올림픽공원 트위터</span></a></li>
+									<li><a href="https://twitter.com/joy_olpark" target="_blank"><i aria-hidden="true"><img th:src="@{/img/common/sns_twitter.png}" alt=""></i><span>Joy 올팍 트위터</span></a></li>
+									<li><a href="https://blog.naver.com/NBlogTop.naver?isHttpsRedirect=true&blogId=joy_olpark" target="_blank"><i aria-hidden="true"><img th:src="@{/img/common/sns_nblog.png}" alt=""></i><span>Joy 올팍 블로그</span></a></li>-->
+									<li><a href="https://www.instagram.com/joy_olpark" target="_blank"><i aria-hidden="true"><img src="/olympicpark/img/common/sns_instagram.png" alt=""></i><span>Joy 올팍 인스타그램</span></a></li>
+									<li><a href="https://www.youtube.com/user/enjoyolpark" target="_blank"><i aria-hidden="true"><img src="/olympicpark/img/common/sns_youtube.png" alt=""></i><span> 올림픽공원 유튜브</span></a></li>
+									<!--<li><a href="https://blog.naver.com/NBlogTop.naver?isHttpsRedirect=true&blogId=joy_festival" target="_blank"><i aria-hidden="true"><img th:src="@{/img/common/sns_nblog.png}" alt=""></i><span>올팍페스티벌</span></a></li>
+									<li><a href="https://enjoyolpark.tistory.com/" target="_blank"><i aria-hidden="true"><img th:src="@{/img/common/sns_tistory.png}" alt=""></i><span>사진공모전</span></a></li>	
+									<li><a href="https://tv.naver.com/olympicpark" target="_blank"><i aria-hidden="true"><img th:src="@{/img/common/sns_naver_tv.png}" alt=""></i><span> 올림픽공원 네이버 TV</span></a></li>-->
+									<li><a href="http://blog.naver.com/kspo2011" target="_blank"><i aria-hidden="true"><img src="/olympicpark/img/common/sns_nblog.png" alt=""></i><span> 국민체육진흥공단</span></a></li>
+									<li><a href="https://www.facebook.com/KSPONCO" target="_blank"><i aria-hidden="true"><img src="/olympicpark/img/common/sns_facebook.png" alt=""></i><span> 한국체육산업개발 </span></a></li>
+								</ul>
+							</div>
+						</div>
+						<!-- //sns_nav_wrap -->
+
+                        <span class="copyright">Copyright ⓒ KSPO&CO All rights reserved.</span>
+                    </div>
+                </div>
+                <!-- //cont_left -->
+                <div class="cont_right">
+                    <div class="relate_site">
+                        <a href="#" class="title" title="관련사이트열기">관련사이트<i class="xi-caret-up-min"></i></a>
+                        <ul class="list">
+	<li><a href="https://www.ksponco.or.kr" target="_blank" title="새창">한국체육산업개발(주)</a></li>
+	<li><a href="https://www.mcst.go.kr/kor/main.jsp" target="_blank" title="새창">문화체육관광부</a></li>
+	<li><a href="https://www.kspo.or.kr" target="_blank" title="새창">국민체육진흥공단</a></li>
+	<li><a href="https://sportsmuseum.kspo.or.kr/" target="_blank" title="새창">국립스포츠박물관</a></li>
+	<li><a href="https://nfa.kspo.or.kr" target="_blank" title="새창">국민체력100</a></li>
+	<li><a href="https://soma.kspo.or.kr" target="_blank" title="새창">소마미술관</a></li>
+	<li><a href="https://www.sports.or.kr/" target="_blank" title="새창">대한체육회</a></li>
+	<li><a href="https://portal.sportal.or.kr/" target="_blank" title="새창">체육포털</a></li>
+	<li><a href="https://www.koreanpc.kr/index.do" target="_blank" title="새창">대한장애인체육회</a></li>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</ul>
+                    </div>
+                    <!-- //relate_site -->
+                    <div class="cert">
+                        <a href="http://www.webwatch.or.kr" target="_blank"><img src="/olympicpark/img/common/footer_cert_wa.png" alt="과학기술정보통신부 WA(WEB접근성) 품질인증 마크, 웹와치(WebWatch) 2025.9.2 ~ 2026.9.1"></a>
+                        <a href=""><img src="/olympicpark/img/common/footer_cert_iso.png" alt="품질/환경 ISO9001/14001"><span>품질/환경<br>ISO9001/14001</span></a>
+						
+                    </div>
+                    <!-- //cert -->
+                </div>
+                <!-- //cont_right -->
+            </div>
+            <!-- //footer_cont -->
+            <!-- 웹로그 -->
+            <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+            <script src="//wcs.naver.net/wcslog.js"></script>
+            <script type="text/javascript">
+                if(!wcs_add) var wcs_add = {};
+                wcs_add["wa"] = "1fd6af722edd1c0";
+                if(window.wcs) {
+                    wcs_do();
+                }
+            </script>
+        </div>
+        <!-- //container -->
+
+        <!--올림픽공원 안내센터 플로팅 메뉴-->
+        <!-- <a href="https://olympicpark-info.channel.io/home" onclick="window.open(this.href, '_blank', 'width=420, height=720, scrollbars=1'); return false;" title="새창으로 열림" id="chatbot-consult-btn" target="_blank" rel="noopener">
+          <img src="/olympicpark/img/main/chatbot_logo.png" alt="올팍 안내센터 아이콘">
+          <span>올팍 안내센터</span>
+        </a> -->
+
+        <!--올림픽공원 챗봇상담 플로팅메뉴-->
+        <a href="https://chatbot.ksponco.ieabot.com/sports/olympicpark?company=%EC%98%AC%EB%A6%BC%ED%94%BD%EA%B3%B5%EC%9B%90" onclick="window.open(this.href, '_blank', 'width=420, height=720, scrollbars=1'); return false;" title="새창으로 열림" id="chatbot-consult-btn" target="_blank" rel="noopener">
+          <img src="/olympicpark/img/main/chatbot_olpark.png" alt="챗봇상담 아이콘">
+          <span>챗봇상담</span>
+        </a>
+    
+    </footer>
+</div>
+<script>
+    //<![CDATA[
+    Kakao.init('aa79ee14eccf059d93605a593ffcd81b');
+
+    Kakao.Link.createDefaultButton({
+        container : '#kakao-link-btn',
+        objectType : 'feed',
+        content:{
+            title : $('meta[property="og:title"]').attr('content'),
+            description : $('meta[property="og:description"]').attr('content'),
+            imageUrl : $('meta[property="og:url"]').attr('content') + $('meta[property="og:image"]').attr('content'),
+            link:{
+                mobileWebUrl : window.location.href,
+                webUrl : window.location.href
+            }
+        },
+        social : {
+            likeCount: 286,
+            commentCount: 45,
+            sharedCount: 845
+        },
+        buttons: [
+            {
+                title: '웹으로 보기',
+                link:{
+                    webUrl : window.location.href
+                }
+            }
+        ]
+    });
+    //]]>
+</script>
+<script type="text/javascript">
+    !!document.getElementById("head_menu") && initNavigation("03");// 메인메뉴 활성화
+    !!document.getElementById("left_menu_top") && initLeftMenuLI("0301", "030101");// 서브메뉴 활성화
+    !!document.getElementById("depth3_menu_div") && init3DepthMenu("030101");
+    !!document.getElementById("depth4_menu_ul") && init4DepthMenu("03010101");
+    !!document.getElementById("depth5_menu_div") && init5DepthMenu("0301010100");
+    !!document.getElementById("head_menu_depth1") && init1DepthComboMenu("03");
+    !!document.getElementById("head_menu_depth2") && init2DepthComboMenu("0301");
+    !!document.getElementById("head_menu_depth3") && init3DepthComboMenu("030101");
+    !!document.getElementById("head_menu_depth4") && init4DepthComboMenu("03010101");
+    !!document.getElementById("head_menu_depth5") && init5DepthComboMenu("0301010100");
+</script>
+</body>
+</html>
