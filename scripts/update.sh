@@ -7,7 +7,9 @@ cd "$(dirname "$0")/.."
 git pull -q --rebase --autostash origin main || { echo "git pull 실패"; exit 1; }
 python3 pipeline/run.py collect >/dev/null || echo "실시간 수집 실패(예보는 계속 만든다)" >&2
 python3 pipeline/run.py build || exit 1
-python3 pipeline/run.py freeze >/dev/null || exit 1
+frz=$(python3 pipeline/run.py freeze) || exit 1
+# 방금 고정했으면 성적표에 바로 보이도록 한 번 더 만든다(고정은 build가 만든 예보를 읽으므로 순서를 바꿀 수 없다)
+case "$frz" in 고정:*) python3 pipeline/run.py build || exit 1 ;; esac
 git add data site/data
 if ! git diff --cached --quiet; then
   git commit -q -m "data: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M') 갱신" && git push -q origin main || { echo "main push 실패"; exit 1; }
