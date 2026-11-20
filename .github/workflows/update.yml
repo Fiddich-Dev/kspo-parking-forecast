@@ -1,5 +1,5 @@
 # 30분마다 scripts/update.sh(수집, 예보·성적표, 22~24시 내일 예보 고정, 커밋, gh-pages 배포)를 돌린다.
-# 2026-11-14 현재 계정 결제 잠금으로 Actions가 시작되지 않아 맥미니 예약 작업이 같은 스크립트를 대신 돌린다(OPERATIONS.md).
+# 2026-11-14~11-20에는 계정 결제 잠금으로 Actions가 막혀 맥미니 예약 작업이 같은 스크립트를 대신 돌렸다(OPERATIONS.md).
 name: update
 
 on:

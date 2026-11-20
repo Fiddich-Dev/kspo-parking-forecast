@@ -4,7 +4,7 @@
 
 ## 무엇이 언제 도나
 
-> **2026-11-14 현재 상태**: GitHub 계정 결제 잠금("The job was not started because your account is locked due to a billing issue.")으로 Actions가 시작되지 않는다. 워크플로 `update`는 꺼 두었고, 맥미니 Hermes 예약 작업 `kspo-forecast`(매시 7분·37분, `~/.hermes/scripts/launchd/kspo-forecast.sh`)가 같은 `scripts/update.sh`를 돌린다. 잠금이 풀리면 `gh workflow enable update`로 켜고 수동 실행이 초록색인지 본 뒤 맥미니 작업을 지운다(둘이 함께 돌면 기록이 두 번 쌓인다).
+> **기록**: 2026-11-14~11-20에는 GitHub 계정 결제 잠금("The job was not started because your account is locked due to a billing issue.")으로 Actions가 시작되지 않아 맥미니 Hermes 예약 작업 `kspo-forecast`가 같은 `scripts/update.sh`를 돌렸다. 2026-11-20 수동 실행이 성공해 워크플로 `update`를 켜고 맥미니 작업을 지웠다. 지금은 아래 표대로 GitHub Actions가 돌린다.
 
 모든 갱신은 `scripts/update.sh` 하나가 한다: 수집 → 예보·성적표 → 22~24시면 내일 예보 고정 → main 커밋 → `site/`를 gh-pages 브랜치에 올림(GitHub Pages가 그 브랜치를 배포).
 
@@ -68,5 +68,4 @@
 
 ## 공모전 뒤 정리할 것
 
-- 맥미니 Hermes 예약 작업 `kspo-parking`(5분마다 수집, 공모전 근거용, 이 저장소와 별개 파일)은 제출 뒤 지운다.
-- 맥미니 Hermes 예약 작업 `kspo-forecast`는 Actions가 다시 돌면 지운다.
+- 맥미니 Hermes 예약 작업 `kspo-parking`(5분마다 수집, 공모전 근거용, 이 저장소와 별개 파일)과 `kspo-forecast`는 2026-11-20 제출 뒤 지웠다. 5분 기록 CSV는 공모전 서류 폴더에 보관한다.

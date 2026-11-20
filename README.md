@@ -70,7 +70,7 @@ scripts/check_no_keys.sh <.env>        # 커밋 전 키 문자열 검사
 
 ### 못 한 것
 
-- **GitHub Actions 실행.** 2026-11-14 첫 실행이 "The job was not started because your account is locked due to a billing issue."로 시작되지 않았다. 워크플로는 꺼 두었고, 같은 스크립트(`scripts/update.sh`)를 맥미니 예약 작업이 30분마다 대신 돌린다. 배포는 gh-pages 브랜치 푸시(GitHub Pages 기본 빌드)로 한다.
+- **GitHub Actions 실행(2026-11-20 해결).** 2026-11-14 첫 실행이 "The job was not started because your account is locked due to a billing issue."로 시작되지 않아, 11/20까지 같은 스크립트(`scripts/update.sh`)를 맥미니 예약 작업이 30분마다 대신 돌렸다. 11/20 수동 실행이 성공해 `update` 워크플로를 켜고 맥미니 작업을 지웠다. 배포는 gh-pages 브랜치 푸시(GitHub Pages 기본 빌드)로 한다.
 - **공연 전날 고정 예보의 채점.** 첫 고정은 2026-11-14 22시대(11/15 공연분)다. 성적표 채점은 그 뒤에 생긴다.
 - **실시간 값의 기준선 가설 확정.** 밤 기록이 하루뿐이라 "확인 전"이다. 그 전에는 실시간 값을 점유율, 만차 판단, 성적표 보정에 쓰지 않는다.
 - **월별 보정.** 11월/7월 비율(1.33배)을 계산만 하고 적용하지 않았다. 실측으로 확인한 뒤 정한다.
